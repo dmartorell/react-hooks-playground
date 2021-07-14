@@ -1,9 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useFetch } from "./customHooks";
 
 const App = () => {
   const [number, setNumber] = useState('');
   const [fetchNumber, setFetchNumber] = useState(null);
+  const inputRef = useRef();
+  const renderCount = useRef(0);
+  const prevNumber = useRef(null);
+
+  useEffect(() => {
+    renderCount.current++;
+    console.log(renderCount.current);
+  })
+
+  useEffect(()=> {
+    prevNumber.current = number;
+  }, [number])
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -27,12 +39,18 @@ const App = () => {
       <form onSubmit={handleSubmit}>
         <label>
           Enter number:
-          <input value={number} onChange={handleChange}type="text" name="number" autoFocus autoComplete="off" />
+          <input ref={inputRef} value={number} onChange={handleChange}type="text" name="number" autoFocus autoComplete="off" />
         </label>
         <input type="submit" value="Submit" />
       </form>
       <br />
       <h3>{data && data}</h3>
+      <br />
+      <br />
+      <p>I have been rendered {renderCount.current} times</p>
+      <br />
+      <p>Current number is {number} but it used to be {prevNumber.current}</p>
+
     </>
   );
 }
