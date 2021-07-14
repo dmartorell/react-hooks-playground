@@ -1,58 +1,37 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useFetch } from "./customHooks";
+import React, { useState, useMemo } from "react";
 
 const App = () => {
-  const [number, setNumber] = useState('');
-  const [fetchNumber, setFetchNumber] = useState(null);
-  const inputRef = useRef();
-  const renderCount = useRef(0);
-  const prevNumber = useRef(null);
+    const [number, setNumber] = useState(1);
+    const multiplyByTwo = (num) => {
+        for(let i = 0; i < 1000000000; i++){}
+        return num * 2;
+    }
+    
+    const multipliedNumber = useMemo(()=> {
+     return multiplyByTwo(number)   
+    }, [number]);
+    
+    const [darkTheme, setDarkTheme] = useState(false);
 
-  useEffect(() => {
-    renderCount.current++;
-    console.log(renderCount.current);
-  })
+    const theme = {
+      backgroundColor: darkTheme ? "black" : "white" ,
+      color: darkTheme ? "white" : "black", 
+    }
 
-  useEffect(()=> {
-    prevNumber.current = number;
-  }, [number])
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if(isNaN(+number)){
-      setNumber('');
-      return;
-    } 
-    setFetchNumber(JSON.parse(number));
-  }
-
-  const handleChange = (event)=> {
-    setNumber(event.target.value);
-  }
-
-  const data = useFetch(`http://numbersapi.com/${fetchNumber}/trivia`);
+    const toggle = () => {
+      setDarkTheme(!darkTheme);
+    }
   
-  return (
-    <>
-      <h1>USE FETCH EXAMPLE</h1>
-      <br />
-      <form onSubmit={handleSubmit}>
-        <label>
-          Enter number:
-          <input ref={inputRef} value={number} onChange={handleChange}type="text" name="number" autoFocus autoComplete="off" />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
-      <br />
-      <h3>{data && data}</h3>
-      <br />
-      <br />
-      <p>I have been rendered {renderCount.current} times</p>
-      <br />
-      <p>Current number is {number} but it used to be {prevNumber.current}</p>
 
+    return (
+    <>
+      <input type="number" value={number} onChange={(e) => setNumber(parseInt(e.target.value))} autoFocus />
+      <br />
+      <button onClick={toggle}>Toggle Theme</button>
+      <p style={theme}>{multipliedNumber}</p>
     </>
-  );
+    );
 }
 export default App;
  
